@@ -1,4 +1,6 @@
-﻿using System.Xml.Linq;
+﻿
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace LagomorphForum.Models
 {
@@ -8,8 +10,11 @@ namespace LagomorphForum.Models
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public string ImageFilename { get; set; } = string.Empty;
+        [NotMapped]
+        [Display(Name = "image, rabbit, hare or bunny preferred")]
+        public IFormFile? ImageFile { get; set; }
         public DateTime CreateDate { get; set; } = DateTime.Now;
 
-        public List<Comment>? Comment { get; set; }
+        public List<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

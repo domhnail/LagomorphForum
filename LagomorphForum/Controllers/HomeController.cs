@@ -1,21 +1,47 @@
 using System.Diagnostics;
+using LagomorphForum.Data;
+using LagomorphForum.Migrations;
 using LagomorphForum.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LagomorphForum.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly LagomorphForumContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(LagomorphForumContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var discussions = _context.Discussion
+                .Include(d => d.Comments)
+                .OrderByDescending(d => d.CreateDate);
+            return View(await discussions.ToListAsync());
+        }
+
+        public async Task<IActionResult> GetDiscussion(int ?id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+
+            var discussion = await _context.Discussion
+                .Include(d => d.Comments)
+                .FirstOrDefaultAsync(m => m.DiscussionId == id);
+
+            if (discussion == null)
+            {
+                return NotFound();
+            }
+
+            return View(discussion);
         }
 
         public IActionResult Privacy()

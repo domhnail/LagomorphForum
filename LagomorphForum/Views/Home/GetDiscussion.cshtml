@@ -1,0 +1,55 @@
+﻿@model LagomorphForum.Models.Discussion
+
+@{
+    ViewData["Title"] = "Discussion";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+
+<div class="get-discussion-page">
+    <a asp-controller="Home" asp-action="Index"><btn class="sticky-btn">go home <i class="bi bi-house-door"></i></btn></a>
+
+    <div class="row">
+        <div class="d-flex flex-column">
+            <div class="card m-3 opening-card">
+                <img src="@Url.Content("/images/" + Model.ImageFilename)"
+                     alt="@Model.Content" />
+                <div class="card-header display-3">
+                    @Html.DisplayFor(model => model.Title)
+                </div>
+                <p class="fs-5 m-3">@Html.DisplayFor(model => model.CreateDate)</p>
+                <div class="card-body display-6">
+                    
+                    @Html.DisplayFor(model => model.Content)
+                </div>
+                <a class="text-decoration-none"
+                   asp-controller="Comments"
+                   asp-action="Create"
+                   asp-route-id="@Model.DiscussionId">
+                    <btn class="btn btn-dark">Reply</btn>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+    @if (Model.Comments.Any())
+    {
+        <div class="comment-container">
+            <div class="d-flex flex-column">
+            @foreach (var item in Model.Comments.OrderBy(c => c.CreateDate))
+            {
+                <div class="comment-card card m-3">
+                    <div class="card-header">@item.CreateDate</div>
+                    <div class="card-body">@item.Content</div>
+                </div>
+            }
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>No comments yet.</p>
+    }
+    </div>
+</div>
