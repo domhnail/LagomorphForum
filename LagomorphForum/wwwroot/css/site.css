@@ -46,7 +46,6 @@ footer {
 .foreground {
     background-color: #665c54;
     border-radius: 8px;
-    padding: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -80,15 +79,10 @@ footer {
 }
 
 .sticky-btn {
-    position: fixed;
-    top: 33px;
-    left: 20px;
-    z-index: 9999;
     background-color: #ff512b;
     color: #1d2021;
     padding: 10px 20px;
     border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     transition: transform 0.2s ease;
 }

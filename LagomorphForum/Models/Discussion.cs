@@ -1,6 +1,8 @@
 ﻿
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 
 namespace LagomorphForum.Models
 {
@@ -13,6 +15,7 @@ namespace LagomorphForum.Models
         [NotMapped]
         [Display(Name = "image, rabbit, hare or bunny preferred")]
         public IFormFile? ImageFile { get; set; }
+        [DisplayName("Date Created")]
         public DateTime CreateDate { get; set; } = DateTime.Now;
 
         public List<Comment> Comments { get; set; } = new List<Comment>();
