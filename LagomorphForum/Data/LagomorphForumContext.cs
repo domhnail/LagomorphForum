@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace LagomorphForum.Data
 {
-    public class LagomorphForumContext : IdentityDbContext
+    public class LagomorphForumContext : IdentityDbContext<ApplicationUser>
     {
         public LagomorphForumContext (DbContextOptions<LagomorphForumContext> options)
             : base(options)
