@@ -6,47 +6,49 @@
 @inject UserManager<ApplicationUser> UserManager
 
 <div class="container">
-	@if (SignInManager.IsSignedIn(User))
-	{
-		@* <li class="nav-item"> *@
-		<a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
-		@* </li> *@
-		@* <li class="nav-item"> *@
-		<form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-			<button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logout</button>
-		</form>
-		@* </li> *@
-	}
-	else
-	{
-		<div class="container-fluid">
-			@if (!String.Equals(ViewData["Title"], "Home Page"))
-			{
-				<div class="d-flex">
-					<div class="me-auto mt-1">
-						<a class="text-decoration-none" asp-controller="Home" asp-action="Index"><btn class="sticky-btn">go home <i class="bi bi-house-door"></i></btn></a>
-					</div>
-					<a class="text-decoration-none nav-link p-1 ps-2" asp-controller="Discussions" asp-action="Index">my threads</a>
-					@* <li class="nav-item"> *@
-					<a class="text-decoration-none nav-link p-1 ps-2" id="register" asp-area="Identity" asp-page="/Account/Register">register</a>
-					@* </li> *@
-					@* <li class="nav-item"> *@
-					<a class="text-decoration-none nav-link p-1 ps-2" id="login" asp-area="Identity" asp-page="/Account/Login">login</a>
-					@* </li> *@
-				</div>
-			}
-			else 
-			{
-				<div class="d-flex justify-content-end">
-					<a class="text-decoration-none nav-link p-1 ps-2" asp-controller="Discussions" asp-action="Index">my threads</a>
-					@* <li class="nav-item"> *@
-					<a class="text-decoration-none nav-link p-1 ps-2" id="register" asp-area="Identity" asp-page="/Account/Register">register</a>
-					@* </li> *@
-					@* <li class="nav-item"> *@
-					<a class="text-decoration-none nav-link p-1 ps-2" id="login" asp-area="Identity" asp-page="/Account/Login">login</a>
-				</div>
-				}
-			
-		</div>
-	}
+    @if (SignInManager.IsSignedIn(User) && !String.Equals(ViewData["Title"], "Home Page"))
+    {
+	    <div class="d-flex justify-content-end">
+		    <div class="me-auto mt-1">
+			    <a class="text-decoration-none" asp-controller="Home" asp-action="Index"><btn class="sticky-btn">go home <i class="bi bi-house-door"></i></btn></a>
+		    </div>
+		    <a class="nav-link text-dark p-1 ps-2" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@UserManager.GetUserName(User)</a>
+		    <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+			    <button id="logout" type="submit" class="nav-link border-0 p-1 ps-2">Logout</button>
+		    </form>
+		    <a class="nav-link p-1 ps-2" asp-controller="Discussions" asp-action="Index">My Threads</a>
+	    </div>
+    }
+    else if (SignInManager.IsSignedIn(User) && String.Equals(ViewData["Title"], "Home Page"))
+    {
+        <div class="d-flex justify-content-end">
+            <a class="nav-link text-dark p-1 ps-2" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@UserManager.GetUserName(User)</a>
+            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button id="logout" type="submit" class="nav-link border-0 p-1 ps-2">Logout</button>
+            </form>
+            <a class="nav-link p-1 ps-2" asp-controller="Discussions" asp-action="Index">My Threads</a>
+        </div>
+    }
+    else
+    {
+        <div class="container-fluid">
+            @if (!String.Equals(ViewData["Title"], "Home Page"))
+            {
+                <div class="d-flex">
+                    <div class="me-auto mt-1">
+                        <a class="text-decoration-none" asp-controller="Home" asp-action="Index"><btn class="sticky-btn">go home <i class="bi bi-house-door"></i></btn></a>
+                    </div>
+                    <a class="text-decoration-none nav-link p-1 ps-2" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                    <a class="text-decoration-none nav-link p-1 ps-2" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex justify-content-end">
+                    <a class="text-decoration-none nav-link p-1 ps-2" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                    <a class="text-decoration-none nav-link p-1 ps-2" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                </div>
+            }
+        </div>
+    }
 </div>

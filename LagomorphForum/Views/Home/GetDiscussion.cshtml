@@ -7,24 +7,33 @@
 <div class="get-discussion-page">
     <div class="row">
         <div class="d-flex flex-column">
-            <div class="card m-3 opening-card">
-                <img src="@Url.Content("/images/" + Model.ImageFilename)"
-                     alt="@Model.Content" />
-                <div class="card-header display-3">
-                    @Html.DisplayFor(model => model.Title)
-                </div>
-                <p class="fs-5 m-3">@Html.DisplayFor(model => model.CreateDate)</p>
-                <div class="card-body display-6">
+	        <div class="card m-3 opening-card">
+		        <img src="@Url.Content("/images/" + Model.ImageFilename)"
+					 alt="@Model.Content" class="get-discussion-page-img" />
+		        <div class="card-header display-3">
+			        @Html.DisplayFor(model => model.Title)
+		        </div>
+		        <p class="fs-5 m-3">@Html.DisplayFor(model => model.CreateDate) 
+			        @if (!string.IsNullOrEmpty(@Model.User.ImageFilename))
+			        {
+	                    <img src="@Url.Content("/profile-pictures/" + Model.User.ImageFilename)"
+	                         class="user-avatar mb-2"
+	                         alt="@Model.User.Name's avatar" />
                     
-                    @Html.DisplayFor(model => model.Content)
-                </div>
-                <a class="text-decoration-none"
-                   asp-controller="Comments"
-                   asp-action="Create"
-                   asp-route-id="@Model.DiscussionId">
-                    <btn class="btn btn-dark">Reply</btn>
-                </a>
-            </div>
+	                    <a asp-controller="Home" asp-action="Profile" asp-route-id="@Model.User.Id" class="text-decoration-none big-link">@Html.DisplayFor(model => model.User.Name)</a>
+                    }
+			        </p>
+		        <div class="card-body display-6">
+			        @Html.DisplayFor(model => model.Content)
+		        </div>
+
+		        <a class="text-decoration-none"
+		           asp-controller="Comments"
+		           asp-action="Create"
+		           asp-route-id="@Model.DiscussionId">
+			        <btn class="btn btn-dark">Reply</btn>
+		        </a>
+	        </div>
         </div>
     </div>
     <div class="row">
@@ -35,7 +44,7 @@
             @foreach (var item in Model.Comments.OrderBy(c => c.CreateDate))
             {
                 <div class="comment-card card m-3">
-                    <div class="card-header">@item.CreateDate</div>
+                            <div class="card-header">@item.CreateDate <a asp-controller="Home" asp-action="Profile" asp-route-id="@item.User.Id" class="text-decoration-none big-link">@item.User.Name</a></div>
                     <div class="card-body">@item.Content</div>
                 </div>
             }

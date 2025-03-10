@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LagomorphForum.Data;
 using LagomorphForum.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace LagomorphForum.Controllers
 {
+    [Authorize]
     public class CommentsController : Controller
     {
         private readonly LagomorphForumContext _context;
-
-        public CommentsController(LagomorphForumContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public CommentsController(LagomorphForumContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         //// GET: Comments
@@ -41,6 +45,11 @@ namespace LagomorphForum.Controllers
         {
             if (ModelState.IsValid)
             {
+                var userId = _userManager.GetUserId(User);
+                if (userId != null)
+                {
+                    comment.UserId = userId;
+                }
                 comment.CreateDate = DateTime.Now;
                 _context.Add(comment);
                 await _context.SaveChangesAsync();

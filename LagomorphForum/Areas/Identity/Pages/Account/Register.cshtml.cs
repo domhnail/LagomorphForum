@@ -99,6 +99,10 @@ namespace LagomorphForum.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
+            [Required]
+            [Display(Name = "Display Name")]
+            public string Name { get; set; }
+
             [Display(Name = "Profile Image (optional)")]
             public IFormFile? ImageFile { get; set; }
         }
@@ -118,6 +122,8 @@ namespace LagomorphForum.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
+                user.Name = Input.Name;
+
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -126,17 +132,21 @@ namespace LagomorphForum.Areas.Identity.Pages.Account
                 if (Input.ImageFile != null)
                 {
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(Input.ImageFile.FileName);
-                    var filePath = Path.Combine("wwwroot/uploads", fileName);
 
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath)); // directory exists
+                    var profilePicturesFolder = Path.Combine("wwwroot", "profile-pictures");
 
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    Directory.CreateDirectory(profilePicturesFolder);
+                    var filePath = Path.Combine(profilePicturesFolder, fileName);
+
+                    await using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await Input.ImageFile.CopyToAsync(stream);
                     }
 
                     user.ImageFilename = fileName; // store filename in db
+                    await _userManager.UpdateAsync(user); // save user changes to db
                 }
+
 
                 if (result.Succeeded)
                 {
@@ -170,7 +180,6 @@ namespace LagomorphForum.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
 

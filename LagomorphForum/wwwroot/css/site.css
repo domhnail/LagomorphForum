@@ -140,7 +140,7 @@ footer {
     align-items: flex-start;
 }
 
-    .get-discussion-page img {
+    .get-discussion-page-img {
         max-width: 300px;
         height: 300px;
         object-fit: cover;
@@ -235,3 +235,69 @@ footer {
     .opening-card .card-body {
         padding-top: 10px;
     }
+
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    min-width: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #3c3836;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+.profile-details dt {
+    color: #bdae93;
+}
+
+.profile-details dd {
+    color: #fbf1c7;
+    padding-left: 1rem;
+}
+
+.user-profile-card {
+    background: #3c3836;
+    border-radius: 8px;
+    padding: 2rem;
+}
+
+.user-avatar {
+    width: 33px !important;
+    height: 33px !important;
+    border-radius: 50% !important;
+    object-fit: cover;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.opening-card .user-avatar {
+    max-width: 33px !important;
+    height: auto !important;
+}
+
+.discussion-card img {
+    max-width: 100% !important;
+    height: auto;
+}
+
+.user-meta {
+    min-width: 60px;
+    text-align: center;
+}
+
+.discussion-image {
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}

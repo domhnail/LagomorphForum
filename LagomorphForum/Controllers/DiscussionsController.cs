@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,23 +8,31 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LagomorphForum.Data;
 using LagomorphForum.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace LagomorphForum.Controllers
 {
+    [Authorize]
     public class DiscussionsController : Controller
     {
         private readonly LagomorphForumContext _context;
-
-        public DiscussionsController(LagomorphForumContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public DiscussionsController(LagomorphForumContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Discussions
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Discussion.ToListAsync());
+            var userId = _userManager.GetUserId(User);
+            var discussions = await _context.Discussion
+                .Where(m => m.UserId == userId)
+                .ToListAsync();
+
+            return View(discussions);
         }
 
         // GET: Discussions/Details/5
@@ -58,13 +67,18 @@ namespace LagomorphForum.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DiscussionId,Title,Content,ImageFilename,CreateDate,ImageFile")] Discussion discussion)
         {
+            
             if (ModelState.IsValid)
             {
+                var userId = _userManager.GetUserId(User);
+                if (userId != null)
+                {
+                    discussion.UserId = userId;
+                }
+
                 discussion.ImageFilename = Guid.NewGuid().ToString() + Path.GetExtension(discussion.ImageFile?.FileName);
 
                 discussion.CreateDate = DateTime.Now;
-                _context.Add(discussion);
-                await _context.SaveChangesAsync();
                 if (discussion.ImageFile != null)
                 {
                     string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", discussion.ImageFilename);
@@ -73,6 +87,8 @@ namespace LagomorphForum.Controllers
                         await discussion.ImageFile.CopyToAsync(fileStream);
                     }
                 }
+                _context.Add(discussion);
+                await _context.SaveChangesAsync();
                 return RedirectToAction("GetDiscussion", "Home", new { id = discussion.DiscussionId });
             }
             return View(discussion);
@@ -85,8 +101,10 @@ namespace LagomorphForum.Controllers
             {
                 return NotFound();
             }
-
-            var discussion = await _context.Discussion.FindAsync(id);
+            var userId = _userManager.GetUserId(User);
+            var discussion = await _context.Discussion
+                .Where(m => m.UserId == userId)
+                .FirstOrDefaultAsync(m => m.DiscussionId == id);
             if (discussion == null)
             {
                 return NotFound();
@@ -106,11 +124,35 @@ namespace LagomorphForum.Controllers
                 return NotFound();
             }
 
+            var existingDiscussion = await _context.Discussion.FindAsync(id);
+            if (existingDiscussion == null)
+            {
+                return NotFound();
+            }
+            var currentUserId = _userManager.GetUserId(User);
+            if (existingDiscussion.UserId != currentUserId)
+            {
+                return Forbid();
+            }
+            
+
             if (ModelState.IsValid)
             {
+                var userId = _userManager.GetUserId(User);
+                if (userId != null)
+                { 
+                    discussion.UserId = existingDiscussion.UserId; //preserve original creator
+                }
+
+                //update properties
+                existingDiscussion.Title = discussion.Title;
+                existingDiscussion.Content = discussion.Content;
+                existingDiscussion.ImageFilename = discussion.ImageFilename;
+                existingDiscussion.CreateDate = discussion.CreateDate;
+
                 try
                 {
-                    _context.Update(discussion);
+                    _context.Update(existingDiscussion);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -126,6 +168,18 @@ namespace LagomorphForum.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            if (!ModelState.IsValid)
+            {
+                Console.WriteLine("ModelState is invalid!");
+                foreach (var key in ModelState.Keys)
+                {
+                    foreach (var error in ModelState[key].Errors)
+                    {
+                        Trace.WriteLine($"Key: {key}, Error: {error.ErrorMessage}");
+                    }
+                }
+                return View(discussion);
+            }
             return View(discussion);
         }
 
@@ -136,8 +190,9 @@ namespace LagomorphForum.Controllers
             {
                 return NotFound();
             }
-
+            var userId = _userManager.GetUserId(User);
             var discussion = await _context.Discussion
+                .Where(m => m.UserId == userId)
                 .FirstOrDefaultAsync(m => m.DiscussionId == id);
             if (discussion == null)
             {

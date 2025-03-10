@@ -5,56 +5,45 @@
 @{
     ViewData["Title"] = "Index";
 }
-<div class="d-flex flex-column justify-content-center align-items-center text-center">
-	<h1 class="p-2">your threads</h1>
 
-	@* <p> *@
-	@* 	<a asp-action="Create">Create New</a> *@
-	@* </p> *@
-	<div class="container">
-		<table class="foreground">
-			<thead>
-			<tr>
-				<th>
-					@Html.DisplayNameFor(model => model.Title)
-				</th>
-				<th>
-					@Html.DisplayNameFor(model => model.Content)
-				</th>
-				@* <th> *@
-				@* 	@Html.DisplayNameFor(model => model.ImageFilename) *@
-				@* </th> *@
-				<th>
-					@Html.DisplayNameFor(model => model.CreateDate)
-				</th>
-			</tr>
-			</thead>
-			<tbody class="p-3">
-			@foreach (var item in Model)
-			{
-				<tr class="border">
-					<td class="fs-5 card-title justify-content-center">
-						@Html.DisplayFor(modelItem => item.Title)
-						<img class="img-fluid m-3" src="@Url.Content("/images/" + item.ImageFilename)"
-						     alt="@item.Content"/>
-					</td>
-					<td>
-						@Html.DisplayFor(modelItem => item.Content)
-					</td>
-					@* <td> *@
-					@* 	@Html.DisplayFor(modelItem => item.ImageFilename) *@
-					@* </td> *@
-					<td>
-						@Html.DisplayFor(modelItem => item.CreateDate)
-					</td>
-					<td>
-						<a asp-action="Edit" asp-route-id="@item.DiscussionId"><button class="btn btn-dark">Edit</button></a>
-						<a asp-action="Details" asp-route-id="@item.DiscussionId"><button class="btn btn-dark">Details</button></a>
-						<a asp-action="Delete" asp-route-id="@item.DiscussionId"><button class="btn btn-dark btn-outline-danger">Delete</button></a>
-					</td>
-				</tr>
-			}
-			</tbody>
-		</table>
-	</div>
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1 class="p-3 mb-4 text-fabd2f">Your Threads</h1>
+
+    <div class="container">
+        <div class="foreground p-3">
+            @foreach (var item in Model)
+            {
+                <div class="discussion-card mb-4 p-3">
+                    <div class="row g-3">
+                        @if (!string.IsNullOrEmpty(item.ImageFilename))
+                        {
+                            <div class="col-12 col-md-3">
+                                <img class="img-fluid rounded-3 discussion-image"
+                                     src="@Url.Content("/images/" + item.ImageFilename)"
+                                     alt="@item.Content" />
+                            </div>
+                        }
+
+                        <div class="col-12 @(!string.IsNullOrEmpty(item.ImageFilename) ? "col-md-6" : "col-md-9")">
+                            <h2 class="card-title mb-3">@item.Title</h2>
+                            <p class="text-muted mb-3">@item.Content</p>
+                            <div class="d-flex align-items-center text-muted small">
+                                <i class="bi bi-clock me-2"></i>
+                                <span>@item.CreateDate.ToString("MMM dd, yyyy HH:mm")</span>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-3 d-flex flex-md-column justify-content-center gap-2">
+                            <a asp-action="Edit" asp-route-id="@item.DiscussionId"
+                               class="btn btn-dark btn-sm w-100">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.DiscussionId"
+                               class="btn btn-dark btn-sm w-100">Details</a>
+                            <a asp-action="Delete" asp-route-id="@item.DiscussionId"
+                               class="btn btn-outline-danger btn-sm w-100">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>

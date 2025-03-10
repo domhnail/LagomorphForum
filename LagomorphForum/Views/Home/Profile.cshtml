@@ -1,0 +1,97 @@
+﻿@model LagomorphForum.Data.ApplicationUser
+
+@{
+    ViewData["Title"] = Model.Name + "'s Profile";
+}
+
+<div class="container profile-page">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="foreground p-4 mb-4">
+                <div class="user-profile-card">
+                    <div class="d-flex align-items-start flex-nowrap" style="gap: 2rem;">
+                        @if (!string.IsNullOrEmpty(Model.ImageFilename))
+                        {
+                            <img src="@Url.Content("/profile-pictures/" + Model.ImageFilename)"
+                                 class="profile-avatar flex-shrink-0"
+                                 alt="@Model.Name's avatar" />
+                        }
+                        else
+                        {
+                            <div class="profile-avatar flex-shrink-0">
+                                <i class="fas fa-user-circle fa-5x text-muted"></i>
+                            </div>
+                        }
+                        <div class="flex-grow-1" style="min-width: 0;">
+                            <h1 class="text-fabd2f mb-3" style="font-size: 2.5rem; line-height: 1.2; word-break: break-word;">
+                                @Model.Name
+                            </h1>
+                            @if (!string.IsNullOrEmpty(Model.Location))
+                            {
+                                <p class="lead text-muted mb-0">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span style="word-break: break-word;">@Model.Location</span>
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- discussions -->
+            <div class="foreground p-4">
+                <h3 class="text-fabd2f mb-4">@Model.Name's Discussions</h3>
+
+                @if (Model.Discussions?.Any() == true)
+                {
+                    <div class="discussions-list">
+                        @foreach (var discussion in Model.Discussions)
+                        {
+                            <div class="discussion-card mb-3 p-3">
+                                <div class="row g-3">
+                                    @if (!string.IsNullOrEmpty(discussion.ImageFilename))
+                                    {
+                                        <div class="col-12 col-md-3">
+                                            <img class="img-fluid rounded-3 discussion-image"
+                                                 src="@Url.Content("/images/" + discussion.ImageFilename)"
+                                                 alt="@discussion.Content" />
+                                        </div>
+                                    }
+
+                                    <div class="col-12 @(!string.IsNullOrEmpty(discussion.ImageFilename) ? "col-md-9" : "col-12")">
+                                        <a class="text-decoration-none"
+                                           asp-controller="Discussions"
+                                           asp-action="Details"
+                                           asp-route-id="@discussion.DiscussionId">
+                                            <h5 class="card-title mb-2">@discussion.Title</h5>
+                                        </a>
+                                        <p class="text-muted small mb-2">
+                                            @(discussion.Content.Length > 100 ? discussion.Content.Substring(0, 100) + "..." : discussion.Content)
+                                        </p>
+                                        <div class="d-flex justify-content-between text-muted small">
+                                            <div>
+                                                <i class="bi bi-chat-dots me-1"></i>
+                                                <span>@discussion.Comments.Count comments</span>
+                                            </div>
+                                            <div>
+                                                <i class="bi bi-clock me-1"></i>
+                                                <span>@discussion.CreateDate.ToString("MMM dd, yyyy")</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted text-center py-4">
+                        <i class="fas fa-comment-slash fa-2x mb-3"></i>
+                        <p>No discussions found</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
